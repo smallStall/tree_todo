@@ -1,0 +1,26 @@
+diff --git a/node_modules/@mui/lab/TreeItem/TreeItem.d.ts b/node_modules/@mui/lab/TreeItem/TreeItem.d.ts
+index 8ae9995..0051c7d 100644
+--- a/node_modules/@mui/lab/TreeItem/TreeItem.d.ts
++++ b/node_modules/@mui/lab/TreeItem/TreeItem.d.ts
+@@ -53,7 +53,7 @@ export interface TreeItemProps
+   /**
+    * The tree node label.
+    */
+-  label?: React.ReactNode;
++  label?: {value : number, content: string};
+   /**
+    * The id of the node.
+    */
+diff --git a/node_modules/@mui/lab/TreeItem/TreeItemContent.d.ts b/node_modules/@mui/lab/TreeItem/TreeItemContent.d.ts
+index 97bf66d..b3c5ece 100644
+--- a/node_modules/@mui/lab/TreeItem/TreeItemContent.d.ts
++++ b/node_modules/@mui/lab/TreeItem/TreeItemContent.d.ts
+@@ -28,7 +28,7 @@ export interface TreeItemContentProps extends StandardProps<React.HTMLAttributes
+   /**
+    * The tree node label.
+    */
+-  label?: React.ReactNode;
++  label?: {value : number, content: string} ;
+   /**
+    * The id of the node.
+    */
