@@ -2,9 +2,15 @@ import { memo, useState } from "react";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import type { Atom, WritableAtom } from "jotai";
 
-type Node = {
+type Label = {
   text: string;
-  value: AtomNode;
+  achieveRate: number;
+  done: boolean;
+};
+
+type Node = {
+  label: Label;
+  value: AtomNode & { init: { label: Label } };
   childNodes: Atom<AtomNode[]>;
 };
 
@@ -23,7 +29,7 @@ const total = atom((get) => {
   const sum = (nodes: Atom<AtomNode[]>): number => {
     const arr = get(nodes);
     return arr.reduce((p: number, c: AtomNode) => {
-      return p + 1 + sum(get(c).childNodes);
+      return p + get(c).value.init.label.achieveRate + sum(get(c).childNodes);
     }, 0);
   };
   return { count: sum(rootNodes) };
@@ -37,10 +43,31 @@ const TotalCount = () => {
 const NodeValue = ({ value }: { value: AtomNode }) => {
   const val = useAtomValue(value);
   const set = useSetAtom(value);
-
+  console.log({ val });
   return (
     <div>
-      <input value={val.text} onChange={(e) => set({ text: e.target.value })} />
+      <input
+        value={val.label.text}
+        onChange={(e) =>
+          set({
+            label: { ...val.label, text: e.target.value },
+          })
+        }
+      />
+      <input
+        value={val.label.achieveRate}
+        onChange={(e) =>
+          set({ label: { ...val.label, achieveRate: Number(e.target.value) } })
+        }
+        placeholder="%"
+      />
+      <input
+        type="checkbox"
+        checked={val.label.done}
+        onChange={(e) =>
+          set({ label: { ...val.label, done: e.target.checked } })
+        }
+      />
     </div>
   );
 };
@@ -69,8 +96,10 @@ const Nodes = ({ nodes }: { nodes: Atom<AtomNode[]> }) => {
 const NewNode = ({ nodes }: { nodes: Atom<AtomNode[]> }) => {
   const append = useSetAtom(appendNode);
   const [text, setText] = useState("");
+  const [achieveRate, setAchieveRate] = useState(100);
+  const [done, setDone] = useState(false);
   const add = () => {
-    append([nodes, { text }]);
+    append([nodes, { label: { text, achieveRate, done: false } }]);
     setText("");
   };
   return (
@@ -79,6 +108,17 @@ const NewNode = ({ nodes }: { nodes: Atom<AtomNode[]> }) => {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Enter new text..."
+      />
+      <input
+        value={achieveRate}
+        onChange={(e) => setAchieveRate(Number(e.target.value))}
+        placeholder="%"
+      />
+      <input
+        type="checkbox"
+        checked={done}
+        onChange={(e) => setDone(e.target.checked)}
+        placeholder="%"
       />
       <button disabled={!text} onClick={add}>
         Add
